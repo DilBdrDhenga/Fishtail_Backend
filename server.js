@@ -31,6 +31,11 @@ connectDB();
 const app = express();
 
 // =======================
+// TRUST PROXY CONFIGURATION (CRITICAL FIX)
+// =======================
+app.set("trust proxy", 1);
+
+// =======================
 // SECURITY MIDDLEWARE
 // =======================
 app.use(
@@ -69,8 +74,9 @@ app.use(
         "http://localhost:5500",
         "http://localhost:5501",
         "https://fishtail-geo-survey.vercel.app",
-        "https://your-admin-panel.vercel.app", // ← Add this
-        "https://admin.fishtail-geo-survey.vercel.app", // ← Or this custom domain
+        "https://your-admin-panel.vercel.app",
+        "https://admin.fishtail-geo-survey.vercel.app",
+        "https://fishtail-backend.onrender.com",
       ];
 
       if (!origin) return callback(null, true);
@@ -109,6 +115,10 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    // Use X-Forwarded-For header if available (behind proxy)
+    return req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
+  },
 });
 app.use("/api/", limiter);
 
@@ -145,12 +155,20 @@ app.use((req, res, next) => {
   if (
     req.method === "GET" ||
     req.path.includes("/auth/") ||
-    req.path === "/api/csrf-token"
+    req.path === "/api/csrf-token" ||
+    req.method === "HEAD" ||
+    req.method === "OPTIONS" ||
+    req.path === "/api/health" ||
+    req.path === "/"
   ) {
     return next();
   }
 
-  const csrfToken = req.headers["x-csrf-token"];
+  const csrfToken =
+    req.headers["x-csrf-token"] ||
+    req.headers["csrf-token"] ||
+    req.headers["CSRF-Token"];
+
   if (!csrfToken) {
     return res.status(403).json({
       success: false,
@@ -182,6 +200,7 @@ app.get("/api/health", (req, res) => {
       mongoose.connection.readyState === 1 ? "connected" : "disconnected",
     environment: process.env.NODE_ENV,
     region: process.env.VERCEL_REGION || "local",
+    emailService: process.env.SMTP_USER ? "Configured" : "Not configured",
   };
 
   res.status(200).json(healthCheck);
@@ -230,6 +249,7 @@ app.get("/", (req, res) => {
     version: "1.0.0",
     environment: process.env.NODE_ENV,
     documentation: "/api/health",
+    status: "Running on Render",
   });
 });
 
@@ -286,6 +306,7 @@ const server = app.listen(PORT, () => {
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
   console.log(`🔐 CSRF Protection: Enabled`);
   console.log(`🍪 HttpOnly Cookies: Enabled`);
+  console.log(`🔧 Trust Proxy: Enabled`);
   console.log("=".repeat(60));
   console.log("✅ Server is ready to handle requests!");
 });
