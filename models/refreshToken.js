@@ -5,7 +5,6 @@ const refreshTokenSchema = Schema({
     type: String,
     required: true,
     unique: true,
-    index: true,
   },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,

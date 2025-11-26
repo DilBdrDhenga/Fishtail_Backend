@@ -4,7 +4,6 @@ const failedAttemptSchema = Schema({
   ip: {
     type: String,
     required: true,
-    index: true,
   },
   count: {
     type: Number,
