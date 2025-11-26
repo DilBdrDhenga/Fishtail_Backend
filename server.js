@@ -105,7 +105,7 @@ app.use(
 // Cookie parser
 app.use(cookieParser());
 
-// Rate Limiting - Enhanced
+// Rate Limiting - Fixed for IPv6 compatibility
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
@@ -115,10 +115,6 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (behind proxy)
-    return req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
-  },
 });
 app.use("/api/", limiter);
 
