@@ -1,19 +1,20 @@
+import compression from "compression";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import rateLimit from "express-rate-limit";
-import helmet from "helmet";
-import path from "path";
-import compression from "compression";
-import mongoose from "mongoose";
 import fs from "fs";
+import helmet from "helmet";
+import mongoose from "mongoose";
+import path from "path";
 import { fileURLToPath } from "url";
-import cookieParser from "cookie-parser";
 
 // Import routes
 import connectDB from "./config/database.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import adminRouter from "./routes/adminRoutes.js";
+import emailRouter from "./routes/emailRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 
 // Load environment variables
@@ -32,8 +33,6 @@ const app = express();
 // =======================
 // SECURITY MIDDLEWARE
 // =======================
-
-// Enhanced Helmet security headers
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -46,7 +45,7 @@ app.use(
         connectSrc: [
           "'self'",
           process.env.CLIENT_URL,
-          "https://your-admin-panel.vercel.app", // ← Add your admin domain
+          "https://your-admin-panel.vercel.app",
         ],
         frameSrc: ["'none'"],
         objectSrc: ["'none'"],
@@ -70,7 +69,6 @@ app.use(
         "http://localhost:5500",
         "http://localhost:5501",
         "https://fishtail-geo-survey.vercel.app",
-        // ADD YOUR ADMIN PANEL VERCEL DOMAIN:
         "https://your-admin-panel.vercel.app", // ← Add this
         "https://admin.fishtail-geo-survey.vercel.app", // ← Or this custom domain
       ];
@@ -91,7 +89,10 @@ app.use(
       "X-Requested-With",
       "X-CSRF-Token",
       "Cookie",
+      "CSRF-Token",
+      "x-csrf-token",
     ],
+    exposedHeaders: ["X-CSRF-Token", "CSRF-Token"],
   })
 );
 
@@ -165,6 +166,7 @@ app.use((req, res, next) => {
 // =======================
 app.use("/api/auth", adminRouter);
 app.use("/api/products", productRouter);
+app.use("/api", emailRouter);
 
 // =======================
 // HEALTH & STATUS
