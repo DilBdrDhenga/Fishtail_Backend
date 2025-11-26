@@ -1,4 +1,4 @@
-import transporter from "../config/emailConfig.js";
+import emailService from "../config/emailConfig.js";
 
 const sendEmail = async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -21,65 +21,54 @@ const sendEmail = async (req, res) => {
   }
 
   try {
-    // Always log the contact form data
+    // Log the contact form data
     console.log("📝 Contact Form Submission:", {
       name,
       email,
       subject,
-      message,
+      message: message.substring(0, 100) + "...", // Log first 100 chars only
       timestamp: new Date().toISOString(),
     });
 
-    // Check if SendGrid is configured
-    if (!process.env.SENDGRID_API_KEY) {
-      console.log("ℹ️ SendGrid not configured - running in fallback mode");
+    // Prepare email content
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+          New Contact Form Submission
+        </h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <p><strong style="color: #007bff;">Name:</strong> ${name}</p>
+          <p><strong style="color: #007bff;">Email:</strong> ${email}</p>
+          <p><strong style="color: #007bff;">Subject:</strong> ${subject}</p>
+        </div>
+        <div style="background: #fff; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px;">
+          <strong style="color: #007bff;">Message:</strong>
+          <p style="margin-top: 10px; line-height: 1.6;">${message.replace(
+            /\n/g,
+            "<br>"
+          )}</p>
+        </div>
+      </div>
+    `;
 
-      // Return success but indicate emails are logged only
-      return res.status(200).json({
-        success: true,
-        message:
-          "Thank you! Your message has been received. We'll contact you soon. (Message logged)",
-      });
-    }
-
-    // SendGrid is configured - send actual emails
-    const mailOptions = {
+    // Send email using the service
+    await emailService.sendMail({
       from: "elido.bimal@gmail.com",
       to: "elido.bimal@gmail.com",
       subject: `Website Contact: ${subject}`,
       replyTo: email,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-            New Contact Form Submission
-          </h2>
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
-            <p><strong style="color: #007bff;">Name:</strong> ${name}</p>
-            <p><strong style="color: #007bff;">Email:</strong> ${email}</p>
-            <p><strong style="color: #007bff;">Subject:</strong> ${subject}</p>
-          </div>
-          <div style="background: #fff; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px;">
-            <strong style="color: #007bff;">Message:</strong>
-            <p style="margin-top: 10px; line-height: 1.6;">${message.replace(
-              /\n/g,
-              "<br>"
-            )}</p>
-          </div>
-        </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent successfully via SendGrid");
+      html: emailHtml,
+    });
 
     res.status(200).json({
       success: true,
-      message: "Message sent successfully! We'll get back to you soon.",
+      message:
+        "Thank you! Your message has been received. We'll contact you soon.",
     });
   } catch (error) {
-    console.error("❌ Email error:", error);
+    console.error("Error in contact form:", error);
 
-    // Even if email fails, return success and log the data
+    // Always return success to the user
     res.status(200).json({
       success: true,
       message:
@@ -88,16 +77,16 @@ const sendEmail = async (req, res) => {
   }
 };
 
-// Test email route
+// Test endpoint to check email configuration
 const testEmail = async (req, res) => {
   const hasSendGrid = !!process.env.SENDGRID_API_KEY;
 
   res.json({
     success: true,
     message: hasSendGrid
-      ? "SendGrid configured"
-      : "SendGrid not configured - running in fallback mode",
-    sendGridConfigured: hasSendGrid,
+      ? "SendGrid API configured"
+      : "Running in logging mode",
+    mode: hasSendGrid ? "api" : "logging",
   });
 };
 
