@@ -103,40 +103,9 @@ const generateTokens = (admin) => {
   return { accessToken, refreshToken };
 };
 
-/*  const setTokenCookies = (res, accessToken, refreshToken) => {
-    const isProduction = process.env.NODE_ENV === "production";
-
-    console.log("🍪 Setting cookies:", {
-      isProduction,
-      hasAccessToken: !!accessToken,
-      hasRefreshToken: !!refreshToken,
-    });
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax", // 'none' for cross-site in production
-      maxAge: 15 * 60 * 1000, // 15 minutes
-      path: "/",
-      domain: isProduction ? undefined : ".yourdomain.com", // Set domain in production
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: "/",
-      domain: isProduction ? undefined : ".yourdomain.com", // Set domain in production
-    });
-    console.log("✅ Cookies should be set now");
-  }; */
-
 const setTokenCookies = (res, accessToken, refreshToken) => {
   const isProduction = process.env.NODE_ENV === "production";
 
-  // For development (localhost), don't set domain
-  // For production, set your actual domain
   const cookieOptions = {
     httpOnly: true,
     secure: isProduction,

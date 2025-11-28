@@ -22,7 +22,7 @@ const initAdmin = async () => {
     // Create admin credentials (matching your frontend)
     const adminCredentials = {
       username: process.env.ADMIN_USERNAME || "admin",
-      email: process.env.ADMIN_EMAIL || "admin@fishtail.com",
+      email: process.env.ADMIN_EMAIL || "",
       passwordHash: await bcrypt.hash(
         process.env.ADMIN_PASSWORD || "password123",
         12

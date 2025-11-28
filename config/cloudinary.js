@@ -13,20 +13,6 @@ cloudinary.config({
 });
 
 // uploading to cloudinary
-/* const uploadToCloudinary = async (file, folder = "fishtail-gallery") => {
-  try {
-    const result = await cloudinary.uploader.upload(file, {
-      folder: folder,
-      resource_type: "auto",
-      quality: "auto:good", // Optimize for web
-      fetch_format: "auto",
-    });
-    return result;
-  } catch (error) {
-    console.error("Cloudinary upload error:", error);
-    throw new Error(`Image upload failed: ${error.message}`);
-  }
-}; */
 const uploadToCloudinary = async (fileBuffer, folder = "fishtail-products") => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(

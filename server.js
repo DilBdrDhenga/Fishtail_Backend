@@ -145,9 +145,7 @@ app.use(
 // Compression middleware
 app.use(compression());
 
-// CSRF protection middleware (exclude GET requests and auth endpoints)
 app.use((req, res, next) => {
-  // Skip CSRF check for GET requests and auth endpoints
   if (
     req.method === "GET" ||
     req.path.includes("/auth/") ||
@@ -205,7 +203,6 @@ app.get("/api/health", (req, res) => {
 // Generate CSRF token endpoint - FIXED
 app.get("/api/csrf-token", (req, res) => {
   try {
-    // Use crypto web API properly
     const generateRandomToken = (length = 32) => {
       const chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -218,7 +215,6 @@ app.get("/api/csrf-token", (req, res) => {
 
     const csrfToken = generateRandomToken(32);
 
-    // Set cookie for CSRF token (not HttpOnly so frontend can read it)
     res.cookie("XSRF-TOKEN", csrfToken, {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -261,7 +257,6 @@ app.use((err, req, res, next) => {
     timestamp: new Date().toISOString(),
   });
 
-  // Log error to file in production
   if (process.env.NODE_ENV === "production") {
     const errorLogStream = fs.createWriteStream(
       path.join(__dirname, "logs", "errors.log"),

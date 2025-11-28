@@ -12,7 +12,6 @@ export const validateLogin = [
     .withMessage("Password must be at least 8 characters"),
 ];
 
-// For POST (create) - all fields required
 export const validateProductCreate = [
   body("name")
     .notEmpty()
@@ -43,7 +42,6 @@ export const validateProductCreate = [
     .withMessage("Category is required and must be valid"),
 ];
 
-// For PATCH (update) - all fields optional
 export const validateProductUpdate = [
   body("name")
     .optional()
@@ -55,7 +53,7 @@ export const validateProductUpdate = [
   body("description")
     .optional()
     .trim()
-    .isLength({ max: 1000 }) // No min length for updates
+    .isLength({ max: 1000 })
     .withMessage("Description must be less than 1000 characters")
     .escape(),
 
@@ -96,7 +94,6 @@ export const validateAdminUpdate = [
     .withMessage("New password must be at least 8 characters"),
 ];
 
-// Validation result handler
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

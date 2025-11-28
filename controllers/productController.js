@@ -48,6 +48,7 @@ export const getProductsByCategory = async (req, res) => {
       "Construction & Civil Engineering Tools",
       "Fire Safety Tools",
       "Safety and Rescue Equipment",
+      "Road Safety Equipment",
       "Trekking & Outdoor Gears",
     ];
 
@@ -233,15 +234,14 @@ export const updateProduct = async (req, res) => {
       updates.description = description.trim();
     }
 
-    // ✅ ADD THIS: Update category if provided
     if (category) {
-      // Validate category against your allowed categories
       const allowedCategories = [
         "Geological & Survey Equipment",
         "Laboratory Testing Equipment",
         "Construction & Civil Engineering Tools",
         "Fire Safety Tools",
         "Safety and Rescue Equipment",
+        "Road Safety Equipment",
         "Trekking & Outdoor Gears",
       ];
 
@@ -270,16 +270,10 @@ export const updateProduct = async (req, res) => {
       updates.cloudinaryId = cloudinaryResult.public_id;
     }
 
-    // DEBUG: Log what will be updated
-    console.log("🔄 Updates to apply:", updates);
-
     const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
       new: true,
       runValidators: true,
     }).select("-__v");
-
-    // DEBUG: Log the final result
-    console.log("✅ Final updated product:", updatedProduct);
 
     res.json(
       formatSuccessResponse(updatedProduct, "Product updated successfully")
