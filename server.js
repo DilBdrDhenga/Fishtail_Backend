@@ -69,10 +69,10 @@ app.use(
   cors({
     origin: function (origin, callback) {
       const allowedOrigins = [
-        "http://localhost:3000/frontend",
-        "http://127.0.0.1:5501/frontend",
-        "http://localhost:5500/frontend",
-        "http://localhost:5501/frontend",
+        "http://localhost:3000",
+        "http://127.0.0.1:5501",
+        "http://localhost:5500",
+        "http://localhost:5501",
         "https://fishtail-geo-survey.vercel.app",
         "https://your-admin-panel.vercel.app",
         "https://admin.fishtail-geo-survey.vercel.app",
