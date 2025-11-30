@@ -22,6 +22,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+// Add this after dotenv.config()
+const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET", "CLIENT_URL"];
+
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+if (missingVars.length > 0) {
+  console.error("🚨 Missing required environment variables:", missingVars);
+  process.exit(1);
+}
 
 // =======================
 // Database Connection
@@ -109,6 +117,9 @@ app.use(
   })
 );
 
+// Enable preflight for all routes
+app.options("*", cors());
+
 // Cookie parser
 app.use(cookieParser());
 
@@ -122,6 +133,9 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    return req.path === "/api/health";
+  },
 });
 app.use("/api/", limiter);
 
@@ -224,9 +238,11 @@ app.get("/api/csrf-token", (req, res) => {
 
     res.cookie("XSRF-TOKEN", csrfToken, {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      domain:
+        process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
     });
 
     res.json({

@@ -215,8 +215,6 @@ export const login = async (req, res) => {
     res.json(
       formatSuccessResponse(
         {
-          accessToken,
-          refreshToken,
           admin: {
             id: admin._id,
             username: admin.username,
