@@ -117,9 +117,6 @@ app.use(
   })
 );
 
-// Enable preflight for all routes
-app.options("*", cors());
-
 // Cookie parser
 app.use(cookieParser());
 
