@@ -50,6 +50,12 @@ app.use(
         connectSrc: [
           "'self'",
           process.env.CLIENT_URL,
+          "http://localhost:3000",
+          "http://127.0.0.1:5500",
+          "http://127.0.0.1:5501",
+          "http://localhost:5500",
+          "http://localhost:5501",
+          "https://fishtail-backend.onrender.com",
           "https://your-admin-panel.vercel.app",
         ],
         frameSrc: ["'none'"],
@@ -71,6 +77,7 @@ app.use(
       const allowedOrigins = [
         "http://localhost:3000",
         "http://127.0.0.1:5501",
+        "http://127.0.0.1:5500",
         "http://localhost:5500",
         "http://localhost:5501",
         "https://fishtail-geo-survey.vercel.app",
