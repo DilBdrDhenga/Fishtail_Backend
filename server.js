@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 // Add this after dotenv.config()
-const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET", "CLIENT_URL"];
+const requiredEnvVars = ["MONGODB_URL", "JWT_SECRET", "CLIENT_URL"];
 
 const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 if (missingVars.length > 0) {
