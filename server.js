@@ -65,6 +65,7 @@ app.use(
           "http://localhost:5501",
           "https://fishtail-backend.onrender.com",
           "https://your-admin-panel.vercel.app",
+          "https://fishtail-frontend.vercel.app",
         ],
         frameSrc: ["'none'"],
         objectSrc: ["'none'"],
@@ -92,6 +93,7 @@ app.use(
         "https://your-admin-panel.vercel.app",
         "https://admin.fishtail-geo-survey.vercel.app",
         "https://fishtail-backend.onrender.com",
+        "https://fishtail-frontend.vercel.app",
       ];
 
       if (!origin) return callback(null, true);
